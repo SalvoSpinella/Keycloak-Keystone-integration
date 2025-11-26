@@ -1,0 +1,76 @@
+version: "3.8"
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.4
+    container_name: keycloak
+    command: start-dev
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_PORT: 5432
+      KC_DB_DATABASE: keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: password_keycloak
+      KC_HOSTNAME: localhost
+    ports:
+      - "8080:8080"
+    networks:
+      - auth-net
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password_keycloak
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - auth-net
+
+  keystone:
+    build: .
+    container_name: keystone
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: mariadb
+      DB_PASSWORD: password_keystone
+      ADMIN_TOKEN: admin
+    volumes:
+      # Montaggi essenziali (config, mapping, html)
+      - ./keystone-config/keystone.conf:/etc/keystone/keystone.conf
+      - ./keystone-config/keystone-mapping.json:/etc/keystone/keystone-mapping.json
+      - ./keystone-config/sso_callback.html:/etc/keystone/sso_callback.html
+      - ./keystone-config/wsgi-keystone.conf:/etc/apache2/sites-enabled/keystone.conf
+    networks:
+      - auth-net
+    depends_on:
+      - mariadb
+
+  mariadb:
+    image: mariadb:10.6
+    container_name: mariadb
+    environment:
+      MARIADB_ROOT_PASSWORD: root_password
+      MARIADB_DATABASE: keystone
+      MARIADB_USER: keystone
+      MARIADB_PASSWORD: password_keystone
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - auth-net
+
+volumes:
+  postgres_data:
+  mariadb_data:
+
+networks:
+  auth-net:
+    driver: bridge

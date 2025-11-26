@@ -1,0 +1,19 @@
+[
+    {
+        "local": [
+            {
+                "user": {
+                    "name": "{0}",
+                    "domain": { "name": "Default" }
+                },
+                "group": {
+                    "name": "federated_users",
+                    "domain": { "name": "Default" }
+                }
+            }
+        ],
+        "remote": [
+            { "type": "HTTP_OIDC_EMAIL" }
+        ]
+    }
+]
