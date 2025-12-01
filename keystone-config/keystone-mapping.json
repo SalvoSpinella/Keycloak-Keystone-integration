@@ -4,16 +4,22 @@
             {
                 "user": {
                     "name": "{0}",
-                    "domain": { "name": "Default" }
+                    "domain": {
+                        "name": "federated_domain"
+                    }
                 },
                 "group": {
                     "name": "federated_users",
-                    "domain": { "name": "Default" }
+                    "domain": {
+                        "name": "federated_domain"
+                    }
                 }
             }
         ],
         "remote": [
-            { "type": "HTTP_OIDC_EMAIL" }
+            {
+                "type": "OIDC-preferred_username"
+            }
         ]
     }
 ]

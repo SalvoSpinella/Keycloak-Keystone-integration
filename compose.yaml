@@ -1,6 +1,10 @@
 version: "3.8"
 
 services:
+
+  # ... (i tuoi servizi keycloak, postgres, keystone, mariadb rimangono uguali) ...
+  # Assicurati solo che keystone sia accessibile a horizon tramite la rete auth-net
+
   keycloak:
     image: quay.io/keycloak/keycloak:24.0.4
     container_name: keycloak
@@ -44,7 +48,6 @@ services:
       DB_PASSWORD: password_keystone
       ADMIN_TOKEN: admin
     volumes:
-      # Montaggi essenziali (config, mapping, html)
       - ./keystone-config/keystone.conf:/etc/keystone/keystone.conf
       - ./keystone-config/keystone-mapping.json:/etc/keystone/keystone-mapping.json
       - ./keystone-config/sso_callback.html:/etc/keystone/sso_callback.html
@@ -66,7 +69,7 @@ services:
       - mariadb_data:/var/lib/mysql
     networks:
       - auth-net
-
+      
 volumes:
   postgres_data:
   mariadb_data:
